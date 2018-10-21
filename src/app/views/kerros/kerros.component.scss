@@ -1,0 +1,30 @@
+
+
+.bg {
+
+  height: 100%;
+}
+
+.hissi-btns-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+.info {
+  color: red;
+  border: 1px solid;
+  border-color: black;
+  display: inline-block;
+  margin-bottom: 2em;
+  padding: 4px;
+}
+
+
+.pressed {
+  color: red;
+}
+
+.canOpen {
+  background-color: yellow;
+}

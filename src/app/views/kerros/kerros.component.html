@@ -1,0 +1,14 @@
+<div class="bg">
+
+<h2 [ngClass]= "{'canOpen': ovenVoiAvata}">{{kerrosNro}} KRS</h2>
+<div [hidden]="!ovenVoiAvata">astu hissiin</div>
+ <div class="info">
+  {{hissinSijainti | async}}
+ </div>
+<div *ngFor="let nappula of napit" class="hissi-btns-container">
+  <button (click)="tilaaHissi(nappula)" mat-mini-fab>
+    <mat-icon [ngClass]= "{'pressed': nappula.pressed}" aria-label="Example icon-button with a heart icon">{{nappula.icon}}</mat-icon>
+  </button>
+</div>
+</div>
+
