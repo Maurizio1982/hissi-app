@@ -7,18 +7,22 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { KerrosComponent } from './views/kerros/kerros.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
+import { InsideHissiComponent } from './views/inside-hissi/inside-hissi.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
     AppComponent,
-    KerrosComponent
+    KerrosComponent,
+    InsideHissiComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
