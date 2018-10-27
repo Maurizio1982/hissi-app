@@ -12,11 +12,9 @@ import { Router } from '@angular/router';
 })
 export class KerrosComponent implements OnInit, DoCheck, OnDestroy {
   counter$: Observable<number>;
-  testi: number;
-  tics = 0;
   ovenVoiAvata = false;
-  kerrosNro = 0;
-  hissiHuollossa = true;
+  kerrosNro: number;
+  hissiHuollossa = false;
   hissinSijainti: number;
   napit: Nappula[] = [];
   tilattu = false;
@@ -24,27 +22,25 @@ export class KerrosComponent implements OnInit, DoCheck, OnDestroy {
   subscriptions = [];
 
   constructor(private ohjausService: OhjausService, private router: Router) {
-
   }
 
   ngOnInit() {
-
-    this.testi = this.ohjausService.hissinSijainti;
-    // sisäinen
-
-
-
-
+    this.ohjausService.setSecret('secret');
+    this.ohjausService.liikkeessä ? this.kerrosNro = this.ohjausService.getHissinSijainti() :   this.kerrosNro = 0;
     this.napit = [new Nappula('arrow_drop_up', 'ylös'), new Nappula('arrow_drop_down', 'alas')];
-    // this.hissinnSijainti = this.ohjausService.nykyinenKerros();
-    this.subscriptions.push(this.ohjausService.nykyinenKerros().subscribe(data => {
-      console.log(data.kerros);
-      console.log(data.poikkeus);
-      this.hissiHuollossa =  data.poikkeus;
-      if (this.hissiHuollossa) {this.tilattu = true; }
+    this.hissinSijainti = this.ohjausService.getHissinSijainti();
+    console.log(this.hissinSijainti);
+    this.checkIfFirstOrLast();
 
-      this.hissinSijainti = data.kerros;
-    }));
+    this.subscriptions.push(this.ohjausService.getTilaTieto().subscribe(tilaTieto => this.hissiHuollossa = tilaTieto.poikkeus));
+  }
+
+  /**
+   * Kun kerros on alin, ei näytetä alaspäin tilausnappia ja päinvastoin
+   */
+  private checkIfFirstOrLast(): void {
+    if (this.kerrosNro === 0 ) {this.napit.find(nappi => nappi.suunta === 'alas').hidden = true; }
+    if (this.kerrosNro === this.ohjausService.getKerroksia() ) {this.napit.find(nappi => nappi.suunta === 'ylös').hidden = true; }
   }
 
   ngDoCheck(): void {
@@ -52,9 +48,10 @@ export class KerrosComponent implements OnInit, DoCheck, OnDestroy {
      console.log('jee');
      this.ovenVoiAvata = true;
    }
-
-   if (this.testi === this.kerrosNro) {
-     this.timerSubscription.unsubscribe();
+   if (this.hissinSijainti === this.kerrosNro) {
+     if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+     }
    }
   }
 
@@ -66,40 +63,19 @@ export class KerrosComponent implements OnInit, DoCheck, OnDestroy {
    * tilaa tilaa hissin valittuun kerrokseen parametrinaan myös menosuunta
    */
   public tilaa(nappula) {
-    console.log(nappula.suunta);
-    if (this.tilattu || (this.kerrosNro === 0 && nappula.suunta === 'alas') ||
-    (this.kerrosNro === this.ohjausService.getKerroksia() && nappula.suunta === 'ylös')) { return; }
+    console.log('painettu', nappula);
+    if (this.hissiHuollossa) { return; }
     nappula.pressed = true;
     this.tilattu = true;
     this.ohjausService.tilaaHissi(this.kerrosNro, nappula.suunta);
     // jeiii tällä tavalla!!
-    this.timerSubscription = this.ohjausService.source.subscribe(val => --this.testi);
-
-    if (this.kerrosNro < this.hissinSijainti) {
-      console.log('täällä');
-      this.startTimerDown();
-    } else {
-      this.startTimerUp();
-    }
-
+    this.timerSubscription = this.ohjausService.source.subscribe(val => {
+      console.log(val);
+      this.kerrosNro < this.hissinSijainti ?  --this.hissinSijainti : ++this.hissinSijainti;
+    });
   }
 
-  startTimerDown() {
-    this.counter$ = timer(0, 1000).pipe(
-      take(this.hissinSijainti - this.kerrosNro),
-      map(() => --this.hissinSijainti)
-
-    );
-  }
-
-  startTimerUp() {
-    this.counter$ = timer(0, 1000).pipe(
-      take(this.kerrosNro - this.hissinSijainti),
-      map(() => ++this.hissinSijainti)
-    );
-  }
-
-  astuHissiin() {
+  public astuHissiin() {
     this.router.navigate(['/InsideHissi']);
   }
 

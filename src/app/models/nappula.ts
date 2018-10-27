@@ -4,6 +4,8 @@ export class Nappula {
   public icon: string;
   public nimi: string;
   public kerros: number;
+  public hidden = false;
+  disabled = false;
 
   constructor(icon: string, suunta?: string, kerros?: number, nimi?: string) {
     this.icon = icon;

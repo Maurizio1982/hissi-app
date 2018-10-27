@@ -9,20 +9,20 @@ import { map, take, tap, filter } from 'rxjs/operators';
 })
 export class OhjausService implements OnInit, OnDestroy, DoCheck {
   counter$: Observable<number>;
-
+  private secret: string;
   public source;
-
+  public liikkeessä = false;
   private kerroksia = 5;
   public hissinSijainti: number;
   private hissi = new Hissi(this.kerroksia);
   private subscriptions = [];
-  private kerrosSubject = new ReplaySubject<{kerros: number, poikkeus: boolean}>();
+  private tilaTietoSubject = new ReplaySubject<{poikkeus: boolean}>();
 
   constructor() {
    // this.subscriptions.push(this.hissi.getNykyinenKerros().subscribe(x => {
       console.log('kerros:', this.hissi.getCurrentKerros());
       console.log('huollossa:', this.hissi.isHissiHuollossa());
-      this.kerrosSubject.next({kerros: this.hissi.getCurrentKerros(), poikkeus: this.hissi.isHissiHuollossa()});
+      this.tilaTietoSubject.next({poikkeus: this.hissi.isHissiHuollossa()});
       this.hissinSijainti = this.hissi.getCurrentKerros();
    //
   }
@@ -36,12 +36,11 @@ export class OhjausService implements OnInit, OnDestroy, DoCheck {
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
-  nykyinenKerros(): Observable<{kerros: number, poikkeus: boolean}> {
-    return this.kerrosSubject.asObservable();
+  getTilaTieto(): Observable<{poikkeus: boolean}> {
+    return this.tilaTietoSubject.asObservable();
   }
 
   tilaaHissi(kohde: number, suunta: string) {
-    // this.hissi.siirry(kohde);
 
 
     console.log('tilattu', this.hissinSijainti);
@@ -49,22 +48,7 @@ export class OhjausService implements OnInit, OnDestroy, DoCheck {
     this.hissi.siirry(kohde);
 
     this.hissinSijainti = this.hissi.getCurrentKerros();
-    console.log(this.hissinSijainti);
-
-
-/*     if (kohde < this.hissinSijainti) {
-      console.log('down');
-      this.startTimerDown(kohde);
-      console.log(this.hissinSijainti);
-    } else {
-      this.startTimerUp(kohde);
-    } */
-
-
-
-// timeri tänne :
-// 1. siirrä hissiä yksi pykälä
-// 2 . tiedota halukkaita
+    console.log('hissinsijainti:', this.hissinSijainti);
 
   }
 
@@ -79,27 +63,30 @@ export class OhjausService implements OnInit, OnDestroy, DoCheck {
     return this.kerroksia;
   }
 
-  /* startTimerDown(kohde: number) {
-    console.log('kutsuttu');
-    this.counter$ = timer(0, 1000).pipe(
-      take(this.hissinSijainti - kohde),
-      map(() => --this.hissinSijainti, this.kerrosSubject.next(this.hissinSijainti)
-      )
-    );
-
-
+  public liikuKerrokseen(kerros: number): void {
+    console.log(kerros);
+    this.startTimer();
+    this.liikkeessä = true;
+    this.hissi.siirry(kerros);
+    this.hissinSijainti = this.hissi.getCurrentKerros();
+    console.log(this.hissinSijainti);
   }
 
-  startTimerUp(kohde: number) {
-    this.counter$ = timer(0, 1000).pipe(
-      take(kohde - this.hissinSijainti),
-      tap(x => console.log(this.hissinSijainti, kohde)),
-      map(() => ++this.hissinSijainti)
-    );
-  } */
+getHissinSijainti() {
+  return this.hissinSijainti;
+}
 
 private startTimer() {
+  console.log('timer painettu');
 this.source = timer(0, 1000);
+}
+
+setSecret(salaisuus: string): void {
+  this.secret = salaisuus;
+}
+
+isAuthenticated() {
+  return this.secret;
 }
 
 }

@@ -1,15 +1,18 @@
-<body>
-  <h2 [ngClass]= "{'canOpen': ovenVoiAvata}">{{kerrosNro}} KRS</h2>
+<main>
+  <!-- <h2 [ngClass]= "{'canOpen': ovenVoiAvata}">{{hissinSijainti}} KRS</h2> -->
 
-  <button (click)="poistuHissista()">Poistu hissistä</button>
-
+  <button (click)="poistuHissista()" [hidden]="!ovenVoiAvata">Poistu hissistä</button><br>
+  <div class="info">
+    {{hissinSijainti}}
+   </div>
   <div *ngFor="let nappula of nappulat" >
-    <button *ngIf="nappula.kerros !== -99" (click)="goTo(nappula)" [ngClass]= "{'pressed': nappula.pressed}" >{{nappula.kerros}}</button>
+    <button *ngIf="nappula.kerros !== -99" [disabled]="nappula.disabled? true: false" (click)="meneKerrokseen(nappula)" [ngClass]= "{'pressed': nappula.pressed}" >{{nappula.kerros}}</button>
     <button (click)="teeHaly()" *ngIf="nappula.kerros === -99"  mat-mini-fab>
         <mat-icon >{{nappula.icon}}</mat-icon>
       </button>
+
   </div>
 
-</body>
+</main>
 
 

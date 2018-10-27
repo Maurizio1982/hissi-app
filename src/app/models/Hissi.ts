@@ -6,7 +6,7 @@ export class Hissi {
   private readonly maxWeight = 250;
   private subsriptions = [];
   private isHuollossa = false;
-  private huoltoVali = 3;
+  private huoltoVali = 5;
   hissinKerrosSubject = new ReplaySubject<number>();
 
   constructor(kerroksia: number) {
@@ -19,7 +19,9 @@ export class Hissi {
   }
 
   siirry(kerros: number) {
+    console.log(kerros);
   this.currentKerros = kerros;
+  console.log(this.currentKerros);
  /*    if (this.currentKerros > kohde) {
 
       const a = Array.from(Array(this.currentKerros).keys()).reverse();

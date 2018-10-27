@@ -1,16 +1,13 @@
-<div class="image">
-<h2 hidden>{{counter$ | async}}</h2>
-<h2 [ngClass]= "{'canOpen': ovenVoiAvata}">{{kerrosNro}} KRS</h2>
-<div  *ngIf="hissiHuollossa" class="huollossa">Hissi huollossa: kävele, tai paina F5</div>
-<button (click)="astuHissiin()" [hidden]="!ovenVoiAvata">astu hissiin</button>
- <div class="info">
-  {{hissinSijainti}}
- </div>
-<div *ngFor="let nappula of napit" class="hissi-btns-container">
-  <button (click)="tilaa(nappula)" mat-mini-fab>
-    <mat-icon [ngClass]= "{'pressed': nappula.pressed}" aria-label="Example icon-button with a heart icon">{{nappula.icon}}</mat-icon>
-  </button>
-</div>
-{{testi}}
-</div>
-
+<main>
+  <h2 [ngClass]= "{'canOpen': ovenVoiAvata}">{{kerrosNro}} KRS</h2>
+  <div  *ngIf="hissiHuollossa" class="huollossa">Hissi huollossa: kävele, tai paina F5</div>
+  <button (click)="astuHissiin()" [hidden]="!ovenVoiAvata">astu hissiin</button><br>
+   <div class="info">
+    {{hissinSijainti}}
+   </div>
+  <div *ngFor="let nappula of napit" class="hissi-btns-container">
+    <button *ngIf="!nappula.hidden === true" (click)="tilaa(nappula)" mat-mini-fab>
+      <mat-icon [ngClass]= "{'pressed': nappula.pressed}" aria-label="Example icon-button with a heart icon">{{nappula.icon}}</mat-icon>
+    </button>
+  </div>
+</main>
