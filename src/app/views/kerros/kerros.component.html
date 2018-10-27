@@ -7,7 +7,7 @@
    </div>
   <div *ngFor="let nappula of napit" class="hissi-btns-container">
     <button *ngIf="!nappula.hidden === true" (click)="tilaa(nappula)" mat-mini-fab>
-      <mat-icon [ngClass]= "{'pressed': nappula.pressed}" aria-label="Example icon-button with a heart icon">{{nappula.icon}}</mat-icon>
+      <mat-icon [ngClass]= "{'pressed': nappula.pressed}">{{nappula.icon}}</mat-icon>
     </button>
   </div>
 </main>

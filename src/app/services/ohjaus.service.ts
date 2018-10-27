@@ -1,93 +1,78 @@
-import { Injectable, OnDestroy, OnInit, DoCheck } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Hissi } from '../models/hissi';
-import { Subject, Observable, ReplaySubject, Subscription } from 'rxjs';
-import { pipe,  timer } from 'rxjs';
-import { map, take, tap, filter } from 'rxjs/operators';
+import { Observable, ReplaySubject } from 'rxjs';
+import { timer } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
-export class OhjausService implements OnInit, OnDestroy, DoCheck {
-  counter$: Observable<number>;
-  private secret: string;
-  public source;
-  public liikkeessä = false;
-  private kerroksia = 5;
-  public hissinSijainti: number;
-  private hissi = new Hissi(this.kerroksia);
-  private subscriptions = [];
-  private tilaTietoSubject = new ReplaySubject<{poikkeus: boolean}>();
 
-  constructor() {
-   // this.subscriptions.push(this.hissi.getNykyinenKerros().subscribe(x => {
-      console.log('kerros:', this.hissi.getCurrentKerros());
-      console.log('huollossa:', this.hissi.isHissiHuollossa());
-      this.tilaTietoSubject.next({poikkeus: this.hissi.isHissiHuollossa()});
-      this.hissinSijainti = this.hissi.getCurrentKerros();
-   //
-  }
+// Todo: hissi poistumaan ajastimilla kerroksista, jos ei tee mitään (v2)
+export class OhjausService {
+    private secret: string;
+    public source;
+    public liikkeessä = false;
+    private kerroksia = 5;
+    private hissinSijainti: number;
+    private hissi = new Hissi(this.kerroksia);
+    private tilaTietoSubject = new ReplaySubject<{ poikkeus: boolean }>();
 
-  ngOnInit() {
-
-
-}
-
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
-  }
-  getTilaTieto(): Observable<{poikkeus: boolean}> {
-    return this.tilaTietoSubject.asObservable();
-  }
-
-  tilaaHissi(kohde: number, suunta: string) {
-
-
-    console.log('tilattu', this.hissinSijainti);
-    this.startTimer();
-    this.hissi.siirry(kohde);
-
-    this.hissinSijainti = this.hissi.getCurrentKerros();
-    console.log('hissinsijainti:', this.hissinSijainti);
-
-  }
-
-  ngDoCheck(): void {
-    if (this.hissinSijainti) {
-      console.log(this.hissinSijainti);
+    constructor() {
+        this.tilaTietoSubject.next({ poikkeus: this.hissi.isHissiHuollossa() });
+        this.hissinSijainti = this.hissi.getCurrentKerros();
     }
-   }
 
-  public getKerroksia(): number {
-    console.log(this.kerroksia);
-    return this.kerroksia;
-  }
+    /**
+     * Tiedottaa huollosta
+     * TODO: kunnon luokat poikkeuksille
+     */
+    getTilaTieto(): Observable<{ poikkeus: boolean }> {
+        return this.tilaTietoSubject.asObservable();
+    }
 
-  public liikuKerrokseen(kerros: number): void {
-    console.log(kerros);
-    this.startTimer();
-    this.liikkeessä = true;
-    this.hissi.siirry(kerros);
-    this.hissinSijainti = this.hissi.getCurrentKerros();
-    console.log(this.hissinSijainti);
-  }
+    /**
+     * Hissi kerrokseen
+     */
+    tilaaHissi(kohde: number, suunta: string) {
+        this.startTimer();
+        this.hissi.siirry(kohde);
+        this.hissinSijainti = this.hissi.getCurrentKerros();
+    }
 
-getHissinSijainti() {
-  return this.hissinSijainti;
-}
+    public getKerroksia(): number {
+        return this.kerroksia;
+    }
 
-private startTimer() {
-  console.log('timer painettu');
-this.source = timer(0, 1000);
-}
+    /**
+     * Hissin liikuttamisen logiikka ja asianomaisten informointi
+     */
+    public liikuKerrokseen(kerros: number): void {
+        this.startTimer();
+        this.liikkeessä = true;
+        this.hissi.siirry(kerros);
+        this.hissinSijainti = this.hissi.getCurrentKerros();
+    }
 
-setSecret(salaisuus: string): void {
-  this.secret = salaisuus;
-}
+    getHissinSijainti() {
+        return this.hissinSijainti;
+    }
 
-isAuthenticated() {
-  return this.secret;
-}
+    private startTimer() {
+        this.source = timer(0, 1000);
+    }
 
+    /**
+     * Tilapäisratkaisu routingiin
+     */
+    setSecret(salaisuus: string): void {
+        this.secret = salaisuus;
+    }
+
+    /**
+     * Hissi aina refressin jälkeen kerrokseen
+     */
+    isAuthenticated() {
+        return this.secret;
+    }
 }
 

@@ -11,8 +11,6 @@ export class GuardService implements CanActivate  {
   constructor(public ohjausService: OhjausService, public router: Router) {}
 
   canActivate(): boolean {
-    console.log('guardissa');
-
     if (!this.ohjausService.isAuthenticated()) {
       this.router.navigate(['']);
       return false;

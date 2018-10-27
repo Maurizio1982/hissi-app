@@ -1,6 +1,4 @@
 <main>
-  <!-- <h2 [ngClass]= "{'canOpen': ovenVoiAvata}">{{hissinSijainti}} KRS</h2> -->
-
   <button (click)="poistuHissista()" [hidden]="!ovenVoiAvata">Poistu hissistä</button><br>
   <div class="info">
     {{hissinSijainti}}
@@ -10,9 +8,7 @@
     <button (click)="teeHaly()" *ngIf="nappula.kerros === -99"  mat-mini-fab>
         <mat-icon >{{nappula.icon}}</mat-icon>
       </button>
-
   </div>
-
 </main>
 
 

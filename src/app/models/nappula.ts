@@ -1,10 +1,10 @@
 export class Nappula {
-  public pressed = false;
-  public suunta: string;
-  public icon: string;
-  public nimi: string;
-  public kerros: number;
-  public hidden = false;
+  pressed = false;
+  suunta: string;
+  icon: string;
+  nimi: string;
+  kerros: number;
+  hidden = false;
   disabled = false;
 
   constructor(icon: string, suunta?: string, kerros?: number, nimi?: string) {
