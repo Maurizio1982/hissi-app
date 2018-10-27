@@ -62,7 +62,7 @@ export class KerrosComponent implements OnInit, DoCheck, OnDestroy {
    * tilaa tilaa hissin valittuun kerrokseen parametrinaan myös menosuunta
    */
   public tilaa(nappula) {
-    if (this.hissiHuollossa) { return; }
+    if (this.hissiHuollossa || nappula.pressed) { return; }
 
     nappula.pressed = true;
     this.tilattu = true;
